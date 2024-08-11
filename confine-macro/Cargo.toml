@@ -14,5 +14,5 @@ syn = { version = "2.0.72", features = ["full"] }
 thiserror = "1.0.63"
 toml = "0.8.19"
 
-confine-builder = { path = "../confine-builder" }
+confine-builder = { path = "../confine-builder", version = "0.1.0" }
 config = { version = "0.14.0", features = ["toml"] }

@@ -12,5 +12,5 @@ keywords = ["config", "configuration", "macro", "builder", "config-rs"]
 
 
 [dependencies]
-confine-builder = { path = "../confine-builder" }
-confine-macro = { path = "../confine-macro" }
+confine-builder = { path = "../confine-builder", version = "0.1.0" }
+confine-macro = { path = "../confine-macro", version = "0.1.0" }
