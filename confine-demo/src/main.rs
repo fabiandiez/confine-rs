@@ -1,9 +1,19 @@
 #![allow(unused)]
 
-use confine_macro::{confine};
+use confine::confine;
+use confine::ConfineConfigBuilder;
 use serde::Deserialize;
 
 fn main() {
+    // Using the builder
+    let config = ConfineConfigBuilder::default()
+        .config_path("confine-demo/config".into())
+        .env_var("ENVIRONMENT".into())
+        .prefix("confine-demo".into())
+        .try_load::<MyConfig>()
+        .unwrap();
+    
+    // Using the macro
     let config = MyConfig::try_load().unwrap();
 
     println!("My int: {}", config.my_int);

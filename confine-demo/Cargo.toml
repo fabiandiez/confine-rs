@@ -4,6 +4,5 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-confine-macro = { path = "../confine-macro" }
-confine-builder = { path = "../confine-builder" }
+confine = { path = "../confine" }
 serde = { version = "1.0.206", features = ["derive"] }

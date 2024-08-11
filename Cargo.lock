@@ -64,6 +64,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "confine"
+version = "0.1.0"
+dependencies = [
+ "confine-builder",
+ "confine-macro",
+]
+
+[[package]]
 name = "confine-builder"
 version = "0.1.0"
 dependencies = [
@@ -76,8 +84,7 @@ dependencies = [
 name = "confine-demo"
 version = "0.1.0"
 dependencies = [
- "confine-builder",
- "confine-macro",
+ "confine",
  "serde",
 ]
 

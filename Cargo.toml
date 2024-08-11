@@ -5,5 +5,6 @@ members = [
     "confine-macro",
     "confine-builder",
     "confine-demo",
+    "confine"
 ]
 resolver = "2"

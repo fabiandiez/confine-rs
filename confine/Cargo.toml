@@ -1,0 +1,16 @@
+[package]
+name = "confine"
+version = "0.1.0"
+edition = "2021"
+authors = ["Fabian Diez <contact@fdiez.tech>"]
+homepage = "https://github.com/fabiandiez/confine-rs"
+repository = "https://github.com/fabiandiez/confine-rs"
+license = "MIT OR Apache-2.0"
+description = "An opinionated configuration macro built on top of config-rs"
+categories = ["config"]
+keywords = ["config", "configuration", "macro", "builder", "config-rs"]
+
+
+[dependencies]
+confine-builder = { path = "../confine-builder" }
+confine-macro = { path = "../confine-macro" }
