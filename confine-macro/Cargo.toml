@@ -2,6 +2,13 @@
 name = "confine-macro"
 version = "0.1.0"
 edition = "2021"
+authors = ["Fabian Diez <contact@fdiez.tech>"]
+homepage = "https://github.com/fabiandiez/confine-rs"
+repository = "https://github.com/fabiandiez/confine-rs"
+license = "MIT OR Apache-2.0"
+description = "Macro implementation for the confine crate"
+categories = ["config"]
+keywords = ["config", "configuration", "macro", "config-rs"]
 
 [lib]
 proc-macro = true
