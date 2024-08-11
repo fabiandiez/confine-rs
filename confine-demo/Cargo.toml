@@ -1,0 +1,7 @@
+[package]
+name = "confine-demo"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+confine = { path = "../confine" }

@@ -6,19 +6,26 @@ use darling::ast::NestedMeta;
 use darling::{Error, FromMeta};
 use proc_macro::TokenStream;
 use std::io::ErrorKind;
+use quote::quote;
 use syn::ItemStruct;
+use toml::Value;
+use crate::config::ConfigValue;
+use crate::config::ConfigError;
 
 #[derive(thiserror::Error, Debug)]
 enum ConfineError {
     #[error("Error parsing attribute arguments: {0}")]
     ParseError(#[from] Error),
-    
+
     #[error("Error parsing macro input: {0}")]
     ParseMacroInput(#[from] syn::Error),
 
     #[error("The variable to configure the environment ('{0}') was not set.")]
     EnvVarNotSet(String),
-    
+
+    #[error("Unsupported type: {0}. Currently only supports String, i64, f64, and bool.")]
+    UnsupportedType(String),
+
     #[error("Config file error: {0}")]
     ConfigError(#[from] config::ConfigError),
 }
@@ -52,41 +59,70 @@ impl ConfineArgs {
 }
 
 #[proc_macro_attribute]
-pub fn confine_secret(args: TokenStream, input: TokenStream) -> TokenStream {
-    input
-}
-
-#[proc_macro_attribute]
 pub fn confine(args: TokenStream, input: TokenStream) -> TokenStream {
     process_confine(args, input).unwrap_or_else(|e| e.into())
 }
 
 fn process_confine(args: TokenStream, input: TokenStream) -> Result<TokenStream, ConfineError> {
     let attr_args = NestedMeta::parse_meta_list(args.into())?;
-
     let input = syn::parse::<ItemStruct>(input)?;
-
     let args = ConfineArgs::from_list(&attr_args)?;
-
     let current_env = get_env(&args)?;
-
     let config = config::Config::new(args.prefix(), args.path(), current_env)?;
 
-    let struct_name = &input.ident;
 
     let mut fields = Vec::new();
+    let mut loaded_fields = Vec::new();
     for field in input.fields.iter() {
         let field_name = field.ident.as_ref().expect("Field must have a name.");
-        fields.push(quote::quote!(
-            #field_name: 42,
+        let field_type = &field.ty;
+        fields.push(quote!(
+            #field_name: #field_type,
+        ));
+
+        let field_type_str = quote!(#field_type).to_string();
+        if !["String", "i64", "f64", "bool"].contains(&field_type_str.as_str()) {
+            return Err(ConfineError::UnsupportedType(field_type_str));
+        }
+
+        let config_value = match config.get(&field_name.to_string(), &field_type_str)? {
+            ConfigValue::String(v) => quote! { #v.to_string() },
+            ConfigValue::Int(v) => quote! { #v },
+            ConfigValue::Float(v) => quote! { #v },
+            ConfigValue::Bool(v) => quote! { #v },
+        };
+       
+        loaded_fields.push(quote!(
+            #field_name: #config_value,
         ));
     }
 
-    Ok(
-        quote::quote!(
-        #input
-    )
-            .into())
+    let struct_name = &input.ident;
+    let vis = &input.vis;
+
+    let out_struct = quote!(
+        #vis struct #struct_name {
+            #(#fields)*
+        });
+
+    let out_impl = quote!(
+        impl #struct_name {
+            pub fn load() -> Self {
+                Self {
+                    #(#loaded_fields)*
+                }
+            }
+        }
+    );
+
+    let out = quote!(
+        #out_struct
+        #out_impl
+    );
+
+    dbg!(out.to_string());
+
+    Ok(out.into())
 }
 
 fn get_env(args: &ConfineArgs) -> Result<Option<String>, ConfineError> {
@@ -94,7 +130,7 @@ fn get_env(args: &ConfineArgs) -> Result<Option<String>, ConfineError> {
         Ok(v) => Some(v),
         Err(_) => {
             #[cfg(not(debug_assertions))]
-            return Err(EnvVarNotSet(args.env_var()).into());
+            return Err(ConfineError::EnvVarNotSet(args.env_var()).into());
 
             #[cfg(debug_assertions)]
             None
