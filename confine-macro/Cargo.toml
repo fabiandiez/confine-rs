@@ -1,5 +1,5 @@
 [package]
-name = "confine"
+name = "confine-macro"
 version = "0.1.0"
 edition = "2021"
 
@@ -13,3 +13,6 @@ quote = "1.0.36"
 syn = { version = "2.0.72", features = ["full"] }
 thiserror = "1.0.63"
 toml = "0.8.19"
+
+confine-builder = { path = "../confine-builder" }
+config = { version = "0.14.0", features = ["toml"] }

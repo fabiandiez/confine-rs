@@ -1,8 +1,9 @@
-# workspace with confine as lib and confine-demo as bin
+# workspace with confine-macro as lib and confine-macro-demo as bin
 
 [workspace]
 members = [
-    "confine",
+    "confine-macro",
+    "confine-builder",
     "confine-demo",
 ]
 resolver = "2"
