@@ -72,7 +72,7 @@ fn process_confine(args: TokenStream, input: TokenStream) -> Result<TokenStream,
         #input
 
         impl #struct_name {
-            fn try_load() -> Result<Self, confine::ConfineBuilderError> {
+            pub fn try_load() -> Result<Self, confine::ConfineBuilderError> {
                 let config = confine::ConfineConfigBuilder::default()
                     .config_path(#path.into())
                     .env_var(#env_var.into())
