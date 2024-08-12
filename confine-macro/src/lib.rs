@@ -1,16 +1,10 @@
-#![allow(unused)]
-
 mod config;
 
 use darling::ast::NestedMeta;
 use darling::{Error, FromMeta};
 use proc_macro::TokenStream;
-use std::io::ErrorKind;
-use std::path::PathBuf;
 use quote::quote;
 use syn::ItemStruct;
-use toml::Value;
-
 
 #[derive(thiserror::Error, Debug)]
 enum ConfineError {
@@ -69,14 +63,14 @@ fn process_confine(args: TokenStream, input: TokenStream) -> Result<TokenStream,
     let args = ConfineArgs::from_list(&attr_args)?;
     let input = syn::parse::<ItemStruct>(input)?;
     let struct_name = &input.ident;
-    
+
     let path = args.path();
     let env_var = args.env_var();
     let prefix = args.prefix();
-    
+
     Ok(quote!(
         #input
-        
+
         impl #struct_name {
             fn try_load() -> Result<Self, confine::ConfineBuilderError> {
                 let config = confine::ConfineConfigBuilder::default()
@@ -87,5 +81,6 @@ fn process_confine(args: TokenStream, input: TokenStream) -> Result<TokenStream,
                 Ok(config)
             }
         }
-    ).into())
+    )
+    .into())
 }

@@ -12,7 +12,7 @@ fn main() {
         .prefix("confine-demo".into())
         .try_load::<MyConfig>()
         .unwrap();
-    
+
     // Using the macro
     let config = MyConfig::try_load().unwrap();
 

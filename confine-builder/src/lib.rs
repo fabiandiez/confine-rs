@@ -1,6 +1,6 @@
-use std::path::PathBuf;
 use config::Config;
 use serde::Deserialize;
+use std::path::PathBuf;
 
 #[derive(thiserror::Error, Debug)]
 pub enum ConfineBuilderError {
@@ -43,10 +43,15 @@ impl ConfineConfigBuilder {
         self
     }
 
-    pub fn try_load<'de, T>(self) -> Result<T, ConfineBuilderError> where T: Deserialize<'de> {
+    pub fn try_load<'de, T>(self) -> Result<T, ConfineBuilderError>
+    where
+        T: Deserialize<'de>,
+    {
         let local_config = self.config_path.join(format!("{}.toml", self.prefix));
         let env = std::env::var(&self.env_var)?;
-        let env_config = self.config_path.join(format!("{}-{}.toml", self.prefix, env));
+        let env_config = self
+            .config_path
+            .join(format!("{}-{}.toml", self.prefix, env));
 
         let builder = Config::builder()
             .add_source(config::File::from(local_config))
