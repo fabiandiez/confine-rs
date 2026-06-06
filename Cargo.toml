@@ -7,4 +7,4 @@ members = [
     "confine-demo",
     "confine"
 ]
-resolver = "2"
+resolver = "3"
